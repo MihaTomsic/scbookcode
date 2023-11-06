@@ -4,37 +4,79 @@ Server.default = s = Server.internal.boot;
 
 /////////////
 
-play({SinOsc.ar(LFNoise0.kr(12, mul: 600, add: 1000), 0.3)})
+play({SinOsc.ar(LFNoise0.kr(1, mul: 600, add: 1500))})
+play({SinOsc.ar(LFNoise1.kr(10, mul: 600, add: 1500))})
+play({SinOsc.ar(LFNoise2.kr(10, mul: 600, add: 1500))})
+
+play({SinOsc.ar(LFNoise2.kr([1,1.1], mul: 600, add: 1500))})
+
 
 /////////////
 
-play({RLPF.ar(Dust.ar([12, 15]), LFNoise1.ar(1/[3, 4], 1500, 1600), 0.02)})
+play({RLPF.ar(Dust.ar([10, 15]), LFNoise1.ar(1/[3, 4], 1500, 1600), 0.02)})
+
+play({RLPF.ar(Dust.ar([10, 15]), LFNoise0.kr(1/[3, 4], 1500, 1600), 0.02)})
+
+play({RLPF.ar(Dust.ar([10, 15]), 3000)})
+
 
 ///////////// Figure 1.1 Example of additive synthesis
 
+(
 play({
 	var sines = 100, speed = 6;
-	Mix.fill(sines, 
-		{arg x; 
+	Mix.fill(sines,
+		{arg x;
 			Pan2.ar(
-				SinOsc.ar(x+1*100, 
-					mul: max(0, 
+				SinOsc.ar(x+1*100,
+					mul: max(0,
 						LFNoise1.kr(speed) +
 						Line.kr(1, -1, 30)
 					)
 				), rand2(1.0))})/sines})
-
+)
 /////////////
 
-rand(100)
+///////////// Figure 1.1 Example of additive synthesis
 
-exprand(1.0, 100.0) 
+(
+play({
+	var sines = 3, speed = 16;
+	Mix.fill(sines,
+		{arg x;
+			Pan2.ar(
+				SinOsc.ar(x+1*100,
+					mul: max(0,
+						LFNoise1.kr(speed) +
+						Line.kr(1, -1, 30)
+					)
+				), rand2(1.0))})/sines})
+)
+/////////////
+
+
+rand(100)  // 1, n-1
+rand2(100) // -n+1,n-1
+
+dup(rand(100),10)
+
+dup({rand(100)},10)
+
+sort(dup({round(rand(100.0),0.1)},10))
+
+
+exprand(1.0, 100.0)
+
+dup({round(exprand(0.01,1),0.01)},10)
+
+///////
 
 thisThread.randSeed = 666; {rand(10.0)} ! 10;
 
 dup("echo", 20)
+"echo" ! 20
 
-round([3.141, 5.9265, 358.98], 0.01)
+round([3.141, 5.9265, 358.98], 0.03)
 
 sort([23, 54, 678, 1, 21, 91, 34, 78])
 
@@ -44,9 +86,9 @@ sort(round(dup({exprand(1, 10)}, 100), 0.1))
 
 /////////////
 
-                            exprand(1.0, 1000.0)
-                   dup({exprand(1.0, 1000.0)}, 100)
-           sort(dup({exprand(1.0, 1000.0)}, 100))
+                exprand(1.0, 1000.0)
+           dup({exprand(1.0, 1000.0)}, 100)
+      sort(dup({exprand(1.0, 1000.0)}, 100))
 round(sort(dup({exprand(1.0, 1000.0)}, 100)), 0.01)
 
 ///////////// Figure 1.3 Fortuitous futuristic nested music.
@@ -57,11 +99,11 @@ play(
 		CombN.ar(
 			SinOsc.ar(
 				midicps(
-					LFNoise1.ar(3, 24, 
+					LFNoise1.ar(3, 24,
 						LFSaw.ar([5, 5.123], 0, 3, 80)
 					)
-				), 
-				0, 0.4), 
+				),
+				0, 0.4),
 			1, 0.3, 2)
 	}
 )
@@ -100,6 +142,8 @@ play(
 
 {1000.0.rand.round(0.01).postln}.dup(100).postln.sort.plot // choose etc., sort, plot
 
+{1000.0.rand.round(0.01)}.dup(100).postln.sort.plot // choose etc., sort, plot
+
 //Mac only
 1000.0.rand.round(0.01).postln.asString.speak // convert to string and speak
 
@@ -121,7 +165,14 @@ play(
 
 0.125 * [1, 2, 3, 4, 5, 6, 7, 8].choose // multiples of a smallest quantize value
 
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].permute(6) 
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].permute(6)
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].permute(1)
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].permute(2)
+
+(
+y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+80.do({|i| y.permute(i).postln;});
+)
 
 /////////////
 
@@ -133,7 +184,7 @@ dup(rand(1000.0), 5)  // picks a number, duplicates it
 
 dup({rand(1000.0)}, 5)  //duplicates the function of picking a number
 
-// essentially, this (which has a similar result) 
+// essentially, this (which has a similar result)
 [rand(1000.0), rand(1000.0), rand(1000.0), rand(1000.0), rand(1000.0)]
 
 /////////////
@@ -154,7 +205,7 @@ dup({rand(1000.0)}, 5)  //duplicates the function of picking a number
 
 /////////////
 
-{Blip.ar(25, LFNoise0.kr(5, 12, 14), 0.3)}.play // single channel
+{Blip.ar(25, LFNoise0.kr([5], 12, 14), 0.3)}.play // single channel
 
 {Blip.ar(25, LFNoise0.kr([5, 10], 12, 14), 0.3)}.play // stereo
 
@@ -164,9 +215,9 @@ dup({rand(1000.0)}, 5)  //duplicates the function of picking a number
 
 /////////////
 
-{PMOsc.ar(440, 550, 7)}.play // pretty boring, like an FM radio
+{PMOsc.ar([440,441], 550, 7)}.play // pretty boring, like an FM radio
 
-{PMOsc.ar(440, MouseY.kr(1, 550), MouseX.kr(1, 15))}.play
+{PMOsc.ar([440,445], MouseY.kr(1, 550), MouseX.kr(1, 15), mul:0.5)}.play
 
 {PMOsc.ar(100, 500, 10, 0, 0.5)}.play // all arguments listed in order
 
@@ -174,7 +225,7 @@ dup({rand(1000.0)}, 5)  //duplicates the function of picking a number
 
 {PMOsc.ar(carfreq: 100, mul: 0.5, pmindex: 10, modfreq: 500)}.play // mixed
 
-{SinOsc.ar(mul: MouseX.kr(0, 1.0))}.scope
+{SinOsc.ar(midicps(MouseY.kr(30,127)), mul: dbamp(MouseX.kr(-50, -5)))}.scope
 
 ///////////// Figure 1.4 VCO, VCF, VCA
 
@@ -195,6 +246,10 @@ dup({rand(1000.0)}, 5)  //duplicates the function of picking a number
 		)
 }.play
 )
+
+{Blip.ar([midicps(MouseY.kr(30,127).floor),midicps(MouseX.kr(30,127).floor)],3)}.scope
+
+{Blip.ar(freq: 440.0, numharm: 200.0, mul: 1.0, add: 0.0)}.play
 
 /////////////
 
@@ -284,7 +339,7 @@ Synth("one_tone_only");
 (
 SynthDef("different_tones", {
 	arg freq = 440; // declare an argument and give it a default value
-	var out; 
+	var out;
 	out = SinOsc.ar(freq)*0.3;
 	Out.ar(0, out)
 }).play
@@ -292,7 +347,7 @@ SynthDef("different_tones", {
 
 /////////////
 
-// Run all four, then stop all 
+// Run all four, then stop all
 
 Synth("different_tones", ["freq", 550]);
 
@@ -317,9 +372,9 @@ c.set("freq", 71.midicps);
 
 a.set("freq", 64.midicps); c.set("freq", 72.midicps);
 
-a.free; 
+a.free;
 
-b.free; 
+b.free;
 
 c.free;
 
@@ -328,21 +383,21 @@ c.free;
 (
 //run this first
 SynthDef("PMCrotale", {
-arg midi = 60, tone = 3, art = 1, amp = 0.8, pan = 0; 
+arg midi = 60, tone = 3, art = 1, amp = 0.8, pan = 0;
 var env, out, mod, freq;
 
 freq = midi.midicps;
 env = Env.perc(0, art);
 mod = 5 + (1/IRand(2, 6));
 
-out = PMOsc.ar(freq, mod*freq, 
-	pmindex: EnvGen.kr(env, timeScale: art, levelScale: tone), 
+out = PMOsc.ar(freq, mod*freq,
+	pmindex: EnvGen.kr(env, timeScale: art, levelScale: tone),
 	mul: EnvGen.kr(env, timeScale: art, levelScale: 0.3));
 
 out = Pan2.ar(out, pan);
 
-out = out * EnvGen.kr(env, timeScale: 1.3*art, 
-	levelScale: Rand(0.1, 0.5), doneAction:2);  
+out = out * EnvGen.kr(env, timeScale: 1.3*art,
+	levelScale: Rand(0.1, 0.5), doneAction:2);
 Out.ar(0, out); //Out.ar(bus, out);
 
 }).add;
@@ -374,7 +429,7 @@ Synth("PMCrotale", ["midi", rrand(48, 72).round(1), "tone", rrand(1, 6)])
 
 	rate = [1, 1.01];
 	trigger = Impulse.kr(rate);
-	PlayBuf.ar(1, ~houston, 1, trigger, frames * Line.kr(0, 1, 60)) * 
+	PlayBuf.ar(1, ~houston, 1, trigger, frames * Line.kr(0, 1, 60)) *
 	EnvGen.kr(Env.linen(0.01, 0.96, 0.01), trigger) * rate;
 }.play;
 )
@@ -411,7 +466,7 @@ Synth("PMCrotale", ["midi", rrand(48, 72).round(1), "tone", rrand(1, 6)])
 {Out.kr(~kbus2, LFClipNoise.kr(1/4))}.play;
 )
 
-// Start the second buffer with the same control input buses, 
+// Start the second buffer with the same control input buses,
 // but send it to the right channel using Out.ar(1 etc.
 
 (
@@ -430,7 +485,7 @@ Synth("PMCrotale", ["midi", rrand(48, 72).round(1), "tone", rrand(1, 6)])
 ~kbus4 = Bus.control; // a control bus
   // run these one at a time, (turn down the speakers!)
 
-{Out.kr(~kbus3, SinOsc.kr(3).scope("out3") * 100)}.play; 
+{Out.kr(~kbus3, SinOsc.kr(3).scope("out3") * 100)}.play;
 
 {Out.kr(~kbus4, LFPulse.kr(1/3).scope("out4") * 200)}.play;
 
@@ -438,9 +493,9 @@ Synth("PMCrotale", ["midi", rrand(48, 72).round(1), "tone", rrand(1, 6)])
 
 {Out.ar(1, SinOsc.ar(In.kr(~kbus3) + In.kr(~kbus4) + 880).scope("right"))}.play;
 
-~kbus3 = Bus.control; // a control bus 
+~kbus3 = Bus.control; // a control bus
 
-~kbus4 = Bus.control; // a control bus 
+~kbus4 = Bus.control; // a control bus
 
 {Out.kr(~kbus3, SinOsc.kr(3).range(340, 540))}.play;
 
@@ -459,7 +514,7 @@ x.map(\freq, ~kbus4)
 (
 {
 	Out.ar(0,
-		Pan2.ar( PlayBuf.ar(1, ~houston, loop: 1) * 
+		Pan2.ar( PlayBuf.ar(1, ~houston, loop: 1) *
 			SinOsc.ar(LFNoise0.kr(12, mul: 500, add: 600)),
 		0.5)
 	)
@@ -468,7 +523,7 @@ x.map(\freq, ~kbus4)
 
 (
 {
-var source, delay; 
+var source, delay;
 	source = PlayBuf.ar(1, ~chooston, loop: 1);
 	delay =  AllpassC.ar(source, 2, [0.65, 1.15], 10);
 	Out.ar(0,
@@ -479,7 +534,7 @@ var source, delay;
 
 ///////////// Figure 1.11 FX routing using buses.
 
-// Create and name buses 
+// Create and name buses
 ~delay = Bus.audio(s, 2);
 ~mod = Bus.audio(s, 2);
 ~gate = Bus.audio(s, 2);
@@ -488,7 +543,7 @@ var source, delay;
 {Out.kr(~k5, LFNoise0.kr(4))}.play; // start the control
 
 // Start the last item in the chain, the delay
-{Out.ar(0, AllpassC.ar(In.ar(~delay, 2), 2, [0.65, 1.15], 10))}.play 
+{Out.ar(0, AllpassC.ar(In.ar(~delay, 2), 2, [0.65, 1.15], 10))}.play
 
 // Start the next to last item, the modulation
 {Out.ar(~delay, In.ar(~mod, 2) * SinOsc.ar(In.kr(~k5)*500 + 1100))}.play
@@ -516,7 +571,7 @@ do(50, { [0, 2, 4, 5, 7, 9, 11].at(7.rand).postln})
 
 do(50, { ["C", "D", "E", "F", "G", "A", "B"].at(7.rand).postln})
 
-///////////// 
+/////////////
 
 Task({
 	50.do({
@@ -547,24 +602,24 @@ r = Task({
 	inf.do({ arg count;
 		var midi, oct, density;
 		density = 1.0; // 100% of the time. Uncomment below for 70%, etc.
-		// density = 0.7; 
+		// density = 0.7;
 		// density = 0.3;
 		midi = [0, 2, 4, 7, 9].choose;
 		// midi = [0, 2, 4, 5, 7, 9, 11].choose;
-		// midi = [0, 2, 3, 5, 6, 8, 9, 11] .choose; 
+		// midi = [0, 2, 3, 5, 6, 8, 9, 11] .choose;
 		// midi = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] .choose;
 		oct = [48, 60, 72].choose;
-		if(density.coin, 
+		if(density.coin,
 			{ // true action
 				"".postln;
-				[midi + oct, a.wrapAt(midi), 
+				[midi + oct, a.wrapAt(midi),
 				(oct/12).round(1)].post;
-				Synth("PMCrotale", 
-					["midi", midi + oct, "tone", rrand(1, 7), 
+				Synth("PMCrotale",
+					["midi", midi + oct, "tone", rrand(1, 7),
 					"art", rrand(0.3, 2.0), "amp", rrand(0.3, 0.6), "pan", 1.0.rand2]);
 			}, {["rest"].post}); // false action
-		0.2.wait; 
-	}); 
+		0.2.wait;
+	});
 }).start
 )
 
@@ -579,8 +634,8 @@ if((1 < 20).and(1.isInteger), {"1 is less than 20"}, {"false"})
 10.do({arg count; [count, if(count.odd, {"odd"}, {"even"})].postln})
 
 (
-84.do({arg count; if([0, 4, 7].includes(count%12), 
-	{count.post; " is part of a C triad.".postln}, 
+84.do({arg count; if([0, 4, 7].includes(count%12),
+	{count.post; " is part of a C triad.".postln},
 	{count.post; " is not part of a C traid".postln})})
 )
 
@@ -598,7 +653,7 @@ Array.fill(100, {wchoose([1, 2, 3, 4], [0.5, 0.3, 0.125, 0.075])}).sort
 
 /////////////
 
-[0, 2, 4, 5, 7, 9, 11].do({arg each, count; ["count", count, "each", each].postln})  
+[0, 2, 4, 5, 7, 9, 11].do({arg each, count; ["count", count, "each", each].postln})
 // same
 [0, 2, 4, 5, 7, 9, 11].do({arg whatever, blech; [blech, whatever].postln})
 
@@ -612,17 +667,17 @@ pc = ["C", "C#", "D",  "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
 
 (
 var row, inversion, pitchClass;
-row = Array.series(11, 1).scramble.insert(0, 0); 
+row = Array.series(11, 1).scramble.insert(0, 0);
 // or enter your own row, e.g. Webern's Op 27
-// row = [0, 11, 8, 2, 1, 7, 9, 10, 4, 3, 5, 6]; 
+// row = [0, 11, 8, 2, 1, 7, 9, 10, 4, 3, 5, 6];
 row.postln;
 inversion = 12 - row;
 // I add spaces to the strings for a tidy row
-pitchClass = ["C  ", "C# ", "D  ", "Eb ", 
+pitchClass = ["C  ", "C# ", "D  ", "Eb ",
 	"E  ", "F  ", "F# ", "G  ", "Ab ", "A  ", "Bb ", "B  "];
 inversion.do({arg eachInv;
 	var trans;
-	trans = (row + eachInv); 
+	trans = (row + eachInv);
 	// prints just pitch class
 	trans.do({arg scaleDegree; pitchClass.wrapAt(scaleDegree).post});
 	//"".postln; // uncomment these line if you want to do both
@@ -635,7 +690,7 @@ inversion.do({arg eachInv;
 
 /////////////
 
-{LFNoise1.ar(5000)}.plot // random wave 
+{LFNoise1.ar(5000)}.plot // random wave
 
 {max(0, LFNoise1.ar(5000))}.plot // return only positive values
 
@@ -675,27 +730,27 @@ Array.fill(20, {arg cnt; cnt + 1*110}); // harmonics built on 440
 // And a patch
 (
 {Mix.ar(
-	Array.fill(12, 
-		{arg count; 
+	Array.fill(12,
+		{arg count;
 		var harm;
 		harm = count + 1 * 110; // remember precedence; count + 1, then * 110
-			SinOsc.ar(harm, 
+			SinOsc.ar(harm,
 				mul: max([0, 0], SinOsc.kr(count+1/4))
 				)*1/(count+1)
 		})
 )*0.7}.play
 )
 
-///////////// Figure 1.18 Physically modeled bells. 
+///////////// Figure 1.18 Physically modeled bells.
 
 // Try this first, to illustrate the array of arrays.
 
-Array.fill(3, {Array.fill(10, {rand(1000)})})	
+Array.fill(3, {Array.fill(10, {rand(1000)})})
 // Then this patch.
 (
 {
-var scale, specs, freqs, amps, rings, 
-	numRes = 5, bells = 20, pan; 
+var scale, specs, freqs, amps, rings,
+	numRes = 5, bells = 20, pan;
 scale = [60, 62, 64, 67, 69].midicps;
 	Mix.fill(bells, {
 		freqs = Array.fill(numRes, {rrand(1, 15)*(scale.choose)});
@@ -704,21 +759,21 @@ scale = [60, 62, 64, 67, 69].midicps;
 		specs = [freqs, amps, rings].round(0.01);
 		// specs.postln;
 		pan = (LFNoise1.kr(rrand(3, 6))*2).softclip;
-		Pan2.ar( 
-			Klank.ar(`specs, 
-				Dust.ar(1/6, 0.03)), 
+		Pan2.ar(
+			Klank.ar(`specs,
+				Dust.ar(1/6, 0.03)),
 				pan)
 	})
 }.play;
-) 
+)
 
 ///////////// Figure 1.19 Generative sequences using arrays
 
 ( // first define the synth
 
-SynthDef.new("SimpleBlip", { 
+SynthDef.new("SimpleBlip", {
 arg midi = 60, tone = 10, art = 0.125, amp = 0.2, pan = -1;
-var out, temper;	
+var out, temper;
 out =	Pan2.ar(
 			Blip.ar( // play the sequence
 				midi.midicps,
@@ -733,51 +788,51 @@ Out.ar(0, out*amp)
 )
 
 /////////////
- 
+
 (
 // Then run this Task
 ~inst = [0, 0, 0]; // Three containers for tasks
 ~pSeq = [0, 0, 0]; // Three containers for sequences
-~scaleAdd = [4, 5, 11, nil, 10, 3, 6, nil]; // 
-~notes = 
-[" C", " C#", " D", " Eb", " E", " F", 
-	" F#", " G", " Ab", " A", " Bb", " B"]; 
+~scaleAdd = [4, 5, 11, nil, 10, 3, 6, nil]; //
+~notes =
+[" C", " C#", " D", " Eb", " E", " F",
+	" F#", " G", " Ab", " A", " Bb", " B"];
 ~rout = Task({
 	inf.do({
-		arg cnt1; 
+		arg cnt1;
 		var steps, durSeq, harmSeq;
 		steps = rrand(6, 12);
 		if(cnt1%6 == 0, // every sixth iteration, add a degree
-			{~scale = ~scale.add(~scaleAdd.wrapAt((cnt1/6).round(1) - 1));}); 
-		"\nIteration: ".post; cnt1.post; 
+			{~scale = ~scale.add(~scaleAdd.wrapAt((cnt1/6).round(1) - 1));});
+		"\nIteration: ".post; cnt1.post;
 		[" (center) ", " (right) ", " (left) "].wrapAt(cnt1).postln;
 		if(cnt1%24 == 0, // reset all three
-			{~scale = [0, 2, 7, 9]; 
-			3.do({arg cnt2; 
-				~pSeq.wrapPut(cnt2, 
-					Array.fill(steps, 
+			{~scale = [0, 2, 7, 9];
+			3.do({arg cnt2;
+				~pSeq.wrapPut(cnt2,
+					Array.fill(steps,
 						{~scale.choose + [48, 60].choose}))})});
 		"scale: ".post; ~scale.postln;
 		~pSeq.wrapPut(cnt1, // fill array with scale steps
 			Array.fill(steps, {~scale.choose + [48, 60].choose}));
 		"MIDI seq: ".post; (~pSeq.wrapAt(cnt1)%12).postln;
-		"Sequence (notes): ".post; 
+		"Sequence (notes): ".post;
 		~pSeq.wrapAt(cnt1).do( // print the sequence using note names
-			{arg thisItem; ~notes.at(thisItem%12).post}); 
+			{arg thisItem; ~notes.at(thisItem%12).post});
 		"".postln;
 		// create harmonic and duration arrays
 		harmSeq = Array.fill(steps, {rrand(1.0, 5.0)});
 		durSeq = Array.fill(steps - 1, {rrand(0.01, 0.9)});
 		// stop the previous task at this array position
 		~inst.wrapAt(cnt1).stop;
-		~inst.wrapPut(cnt1, 
+		~inst.wrapPut(cnt1,
 			Task({
 				inf.do({arg cnt3; // each sequence
-					Synth("SimpleBlip", 
-						[\midi, ~pSeq.wrapAt(cnt1).wrapAt(cnt3), 
-						\tone, harmSeq.wrapAt(cnt3), 
-						\art, durSeq.wrapAt(cnt3), 
-						\amp, rrand(0.1, 0.3), 
+					Synth("SimpleBlip",
+						[\midi, ~pSeq.wrapAt(cnt1).wrapAt(cnt3),
+						\tone, harmSeq.wrapAt(cnt3),
+						\art, durSeq.wrapAt(cnt3),
+						\amp, rrand(0.1, 0.3),
 						\pan, cnt1.wrap(-1, 2)]);
 					0.125.wait; // tempo of each note
 				})}).start;
@@ -808,7 +863,7 @@ Server.internal.recSampleFormat = "int16"; // change format
 Server.internal.recChannels = 1; // change from the default stereo
 // saves file in the SC folder, will be overwritten if repeated
 
-Server.internal.prepareForRecord("myAudio.aif"); 
+Server.internal.prepareForRecord("myAudio.aif");
 
 ///////////// Figure 1.20 Offset and scale
 
@@ -818,7 +873,7 @@ Server.internal.prepareForRecord("myAudio.aif");
 	trigger = Impulse.kr(10);
 	wave = SinOsc.kr(1/10) ; // change to 400
 	scale = 1; offset = 0;
-//	wave = wave * scale + offset; 
+//	wave = wave * scale + offset;
 	label = "scale = " ++ scale.asString ++ ", offset = " ++ offset.asString;
 	wave.round(0.01).poll(label: label);
 	}.scope(1)
@@ -836,9 +891,9 @@ Server.internal.prepareForRecord("myAudio.aif");
 	control = control  * scale + offset;
 	SinOsc.ar(freq: abs(control).poll).scope("audio")
 	}.play
-) 
+)
 
-// Speaking of vibrato, I can't resist this faux Theremin. Play it with the Mouse: 
+// Speaking of vibrato, I can't resist this faux Theremin. Play it with the Mouse:
 
 {SinOsc.ar(SinOsc.ar(8, 0, 10, MouseX.kr(400, 1000, 1)))}.play
 
@@ -854,17 +909,17 @@ Server.internal.prepareForRecord("myAudio.aif");
 	modRatio = 4.125;
 	index = 10;
 	carrier = carrier.midicps;
-	carrier.poll(trigger, "carrier"); 
-	index.poll(trigger, "index"); 
+	carrier.poll(trigger, "carrier");
+	index.poll(trigger, "index");
 	modRatio.poll(trigger, "modRatio");
 	PMOsc.ar(carrier, carrier*modRatio, index)
 }.play
 )
 
-///////////// Figure 1.23 PMOsc with offset and scale. 
+///////////// Figure 1.23 PMOsc with offset and scale.
 
 (
-a = SynthDef("PMOsc_ex", 
+a = SynthDef("PMOsc_ex",
 {
 	arg left = 10, right = 10, indexLow = 4, indexHigh = 12;
 	var pitch, timbre, trigger, env, index, out;
@@ -893,7 +948,7 @@ a.set("indexHigh", 4)
 // run this first
 a = SynthDef("Latch_demo",
 {
-arg rate = 9; 
+arg rate = 9;
 var freq, latchrate, index, ratio, env, out;
 latchrate = rate*LFNoise0.kr(1/10, mul: 0.03, add: 1.6);
 index = Latch.kr(
@@ -901,8 +956,8 @@ index = Latch.kr(
 	Impulse.kr(rate)
 	);
 freq = Latch.kr(
-	LFSaw.kr(latchrate, 
-	mul: max(0, LFNoise1.kr(1/5, mul: 24, add: 10)), 
+	LFSaw.kr(latchrate,
+	mul: max(0, LFNoise1.kr(1/5, mul: 24, add: 10)),
 	add: LFNoise0.kr(1/7, mul: 12, add: 60)),
 	Impulse.kr(rate)
 	).round(1).midicps;
@@ -910,8 +965,8 @@ freq = Latch.kr(
 ratio = LFNoise1.kr(1/10, mul: 2.0, add: 5.0);
 
 env = EnvGen.kr(
-	Env.perc(0, LFNoise0.kr(rate, mul: 1, add: 1.5)/rate), 
-	Impulse.kr(rate), 
+	Env.perc(0, LFNoise0.kr(rate, mul: 1, add: 1.5)/rate),
+	Impulse.kr(rate),
 	LFNoise1.kr([5, 5], 2, 1).max(0).min(0.8));
 out = PMOsc.ar(
 	[freq, freq * 1.5],
@@ -936,7 +991,7 @@ a.free;
 
 (
 { // it's just a bell
-var burst, burstEnv, bell, delay, dry, 
+var burst, burstEnv, bell, delay, dry,
 burstFreq = 500, freqs, amps, rings;
 burstEnv = EnvGen.kr(Env.parc(0, 0.05),
 				Dust.kr(1/5), 0.1);
@@ -954,14 +1009,14 @@ rings = Array.fill(10, {rrand(1.0, 6.0)});
 // rings = [1, 1, 1, 1];
 
 bell = Pan2.ar(
-	Klank.ar(`[freqs, amps, rings], burst), 
+	Klank.ar(`[freqs, amps, rings], burst),
 	rrand(-1.0, 1.0)
 );
 
-delay = AllpassN.ar(bell, 2.5, 
-	[LFNoise1.kr(7, 1.5, 1.6), LFNoise1.kr(7, 1.5, 1.6)], 
+delay = AllpassN.ar(bell, 2.5,
+	[LFNoise1.kr(7, 1.5, 1.6), LFNoise1.kr(7, 1.5, 1.6)],
 	1, mul: 0.8);
-bell 
+bell
 + delay
 // + SinOsc.ar(mul: LFPulse.kr(1) * 0.05);
 }.play
